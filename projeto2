@@ -1,0 +1,56 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class Faturamento {
+    public static void main(String[] args) {
+        // Ler o arquivo JSON contendo o faturamento diário
+        File file = new File("faturamento.json");
+        String content = "";
+        try {
+            content = new String(Files.readAllBytes(file.toPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        // Converter o conteúdo do arquivo para um objeto JSON
+        JSONObject json = new JSONObject(content);
+        JSONArray faturamentoDiario = json.getJSONArray("faturamento_diario");
+        
+        // Inicializar as variáveis de mínimo, máximo e soma
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        double soma = 0.0;
+        int numDias = 0;
+        
+        // Iterar sobre os valores de faturamento diário
+        for (int i = 0; i < faturamentoDiario.length(); i++) {
+            double faturamento = faturamentoDiario.getDouble(i);
+            
+            // Atualizar o mínimo e o máximo, se necessário
+            if (faturamento < min) {
+                min = faturamento;
+            }
+            if (faturamento > max) {
+                max = faturamento;
+            }
+            
+            // Somar o faturamento diário à variável de soma
+            soma += faturamento;
+            
+            // Incrementar o contador de dias, se o faturamento diário for superior à média
+            if (faturamento > soma / faturamentoDiario.length()) {
+                numDias++;
+            }
+        }
+        
+        // Imprimir os resultados
+        System.out.println("Menor valor de faturamento: " + min);
+        System.out.println("Maior valor de faturamento: " + max);
+        System.out.println("Número de dias com faturamento superior à média: " + numDias);
+    }
+}
